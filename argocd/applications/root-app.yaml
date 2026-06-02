@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/YOUR_ORG/gitops-platform.git
+    repoURL: https://github.com/shohrabniaz/gitops-platform.git
     targetRevision: main
     path: apps/overlays/dev
   destination:
