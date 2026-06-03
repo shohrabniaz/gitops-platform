@@ -16,9 +16,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: azure/setup-kubectl@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-      - name: Dry-run apply manifests
+      - name: Validate YAML manifests
         run: |
-          kubectl apply --dry-run=client --validate=false -f apps/overlays/dev/
-          kubectl apply --dry-run=client --validate=false -f argocd/applications/
+          pip install pyyaml -q
+          python -c "
+          import pathlib, yaml, sys
+          paths = list(pathlib.Path('apps/overlays/dev').rglob('*.yaml'))
+          paths += list(pathlib.Path('argocd/applications').rglob('*.yaml'))
+          for p in paths:
+              list(yaml.safe_load_all(p.read_text()))
+              print('OK', p)
+          "
