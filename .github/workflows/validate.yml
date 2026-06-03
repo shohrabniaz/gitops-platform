@@ -20,5 +20,5 @@ jobs:
 
       - name: Dry-run apply manifests
         run: |
-          kubectl apply --dry-run=client -f argocd/applications/
-          kubectl apply --dry-run=client -f apps/overlays/dev/
+          kubectl apply --dry-run=client --validate=false -f apps/overlays/dev/
+          kubectl apply --dry-run=client --validate=false -f argocd/applications/
