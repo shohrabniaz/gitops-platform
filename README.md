@@ -1,37 +1,38 @@
 # GitOps Platform
 
-Multi-environment GitOps with **ArgoCD**, **Helm**, **Kustomize**, and canary-ready structure.
+Multi-environment GitOps with **Argo CD**, **Helm**, and Kustomize overlays.
 
-## Status
+## Live demo (local kind cluster)
 
-Phase 1 scaffold — deploy to DOKS after running `scripts/install-cluster-addons.ps1`.
+```powershell
+cd "D:\New folder"
+.\scripts\bootstrap-gitops-local.ps1 -UseKind
+kubectl port-forward svc/argocd-server -n argocd 8443:443
+```
+
+Open https://localhost:8443 — user `admin`. Root app syncs `apps/overlays/dev` (nginx sample API).
+
+See [docs/local-gitops-lab.md](docs/local-gitops-lab.md) (bootstrap script lives in the portfolio workspace `scripts/` folder).
 
 ## Structure
 
 ```
-apps/           # Application manifests (Kustomize overlays)
-infra/          # Cluster infra (ingress, cert-manager refs)
-argocd/         # ArgoCD Application manifests
-sample-app/     # Demo API + Helm chart
+argocd/applications/   # App-of-apps (root-app)
+apps/overlays/dev/       # Demo namespace + sample-api
 ```
 
-## Bootstrap (Phase 1)
+## Bootstrap (DigitalOcean)
 
-1. Create DOKS cluster — `docs/digitalocean-doks-setup.md`
-2. Install addons — `scripts/install-cluster-addons.ps1`
-3. Port-forward ArgoCD UI — see DOKS doc
-4. Apply root app:
+1. Create DOKS — `docs/digitalocean-doks-setup.md` (in workspace `docs/`)
+2. `.\scripts\install-cluster-addons.ps1`
+3. `kubectl apply -f argocd/applications/root-app.yaml`
 
-```powershell
-kubectl apply -f argocd/applications/root-app.yaml
-```
+## CI
 
-## Phase 2 additions
+GitHub Actions validates manifest YAML on every push.
+
+## Phase 2
 
 - Argo Rollouts canary
 - External Secrets Operator
 - Multi-env promotion via PR
-
-## Cost
-
-~$36–40 USD/month on DigitalOcean (1 node + LB).
